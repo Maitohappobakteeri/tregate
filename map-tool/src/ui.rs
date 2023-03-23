@@ -28,7 +28,7 @@ impl UI {
         let bar_length = PROGRESS_BAR_LENGTH as f64;
         let primary_step = 100.0 / bar_length;
 
-        let primary_progress = (progress / primary_step).round() as usize;
+        let primary_progress = (progress / primary_step).round().clamp(0.0, PROGRESS_BAR_LENGTH as f64) as usize;
         let secondary_progress = ((progress % primary_step) / primary_step) as usize
             * (PROGRESS_BAR_LENGTH - primary_progress);
         let empty = PROGRESS_BAR_LENGTH

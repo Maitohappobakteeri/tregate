@@ -352,15 +352,15 @@ fn surface_normal_from_vectors(origin: &Vec3, a: &Vec3, b: &Vec3) -> Vec3 {
     n
 }
 
-fn get_height_or_average(height_map: &Vec<Vec<f64>>, x: usize, y: usize, average: f64) -> f64 {
-    if y >= height_map.len() || y < 0 {
+fn get_height_or_average(height_map: &Vec<Vec<f64>>, x: i64, y: i64, average: f64) -> f64 {
+    if y >= height_map.len() as i64 || y < 0 {
         return average;
     }
-    let row = &height_map[y];
-    if x >= row.len() || x < 0 {
+    let row = &height_map[y as usize];
+    if x >= row.len() as i64 || x < 0 {
         return average;
     }
-    return height_map[y][x];
+    return height_map[y as usize][x as usize];
 }
 
 fn normal_for_point(
@@ -371,6 +371,9 @@ fn normal_for_point(
     y: usize,
     average: f64,
 ) -> Vec3 {
+    let x = x as i64;
+    let y = y as i64;
+    let scale = scale as i64;
     let normals = vec![
         surface_normal_from_vectors(
             &Vec3 {

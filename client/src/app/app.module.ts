@@ -8,17 +8,8 @@ import { TilemapComponent } from './tilemap/tilemap.component';
 import { WorldComponent } from './world/world.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    TilemapComponent,
-    WorldComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+  declarations: [AppComponent, TilemapComponent, WorldComponent],
+  imports: [BrowserModule, AppRoutingModule, HttpClientModule],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

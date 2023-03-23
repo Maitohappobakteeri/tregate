@@ -51,7 +51,7 @@ const simpleFsSource = `
 uniform highp vec3 uColor;
 
 void main() {
-  gl_FragColor = vec4(uColor, 0.1);
+  gl_FragColor = vec4(uColor, 1.0);
 }
 `;
 
@@ -189,21 +189,22 @@ function createLookingAt() {
   return vec3.fromValues(0 + posX, 10 + posY, -35 + posZ);
 }
 
-let spinView = 0.0;
 function createCameraPosition() {
   const lookat = createLookingAt();
-  const cameraPosition = vec3.fromValues(0 + posX, 80 + posY, -30 + posZ);
-  spinView += 0.05;
-  vec3.rotateX(cameraPosition, cameraPosition, lookat, y + 1.0);
-  vec3.rotateY(cameraPosition, cameraPosition, lookat, x + spinView);
+  const cameraPosition = vec3.fromValues(0 + posX, 30 + posY, -10 + posZ);
+  vec3.rotateX(cameraPosition, cameraPosition, lookat, y);
+  vec3.rotateY(cameraPosition, cameraPosition, lookat, x + viewSpin);
   return cameraPosition;
 }
+
+let viewSpin = 0;
 
 function createViewMatrix() {
   const lookat = createLookingAt();
   const cameraPosition = createCameraPosition();
   const viewMatrix = mat4.create();
   mat4.lookAt(viewMatrix, cameraPosition, lookat, [0, 1, 0]);
+  viewSpin += 0.01;
   return viewMatrix;
 }
 
@@ -212,8 +213,6 @@ function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: any) {
   gl.clearDepth(1.0);
   gl.enable(gl.DEPTH_TEST);
   gl.depthFunc(gl.LEQUAL);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
@@ -234,7 +233,7 @@ function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: any) {
   mat4.translate(
     modelViewMatrix, // destination matrix
     modelViewMatrix, // matrix to translate
-    [-3.0 - 20.0, -1.0 + 1.0, -16.0 - 50.0]
+    [-3.0 - 20.0, -1.0 + 1.0, -16.0 - 2000.0]
   ); // amount to translate
 
   mat4.rotateX(modelViewMatrix, modelViewMatrix, rotX);
@@ -304,7 +303,7 @@ function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: any) {
   {
     const offset = 0;
     const vertexCount = buffers.vertexCount;
-    gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
+    // gl.drawArrays(gl.TRIANGLES, offset, vertexCount);
   }
 
   {
@@ -340,7 +339,7 @@ function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: any) {
   mat4.translate(
     modelViewMatrix, // destination matrix
     modelViewMatrix, // matrix to translate
-    [-3.0 - 20.0, -1.0 + 1.0 + 10, -16.0 - 50.0]
+    [-3.0 - 10.0, -1.0 + 1.0 + 10, -16.0 - 35.0]
   ); // amount to translate
 
   mat4.rotateX(modelViewMatrix, modelViewMatrix, rotX);
@@ -351,7 +350,7 @@ function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: any) {
   mat4.scale(
     modelViewMatrix, // destination matrix
     modelViewMatrix, // matrix to translate
-    [0.05, 0.05, 3.0]
+    [0.05, 0.05, 5.0]
   );
   gl.uniformMatrix4fv(
     programInfo.uniformLocations.modelViewMatrix,
@@ -374,7 +373,7 @@ function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: any) {
     gl.uniform3fv(programInfo.uniformLocations.colorVec, color.slice(0, 3));
 
     const offset = i * 36;
-    // gl.drawArrays(gl.TRIANGLES, offset, 36);
+    gl.drawArrays(gl.TRIANGLES, offset, 36);
   }
 
   gl.useProgram(programInfo.simpleProgram);
@@ -414,15 +413,15 @@ function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: any) {
     false,
     viewMatrix
   );
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  // gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
 
 @Component({
-  selector: 'app-world',
-  templateUrl: './world.component.html',
-  styleUrls: ['./world.component.scss'],
+  selector: 'app-buildings',
+  templateUrl: './buildings.component.html',
+  styleUrls: ['./buildings.component.scss'],
 })
-export class WorldComponent implements OnInit {
+export class BuildingsComponent implements OnInit {
   @ViewChild('mainCanvas') mainCanvas?: ElementRef<HTMLCanvasElement>;
 
   constructor(private http: HttpClient) {}
@@ -540,7 +539,7 @@ export class WorldComponent implements OnInit {
       buildings,
       buildingNormals
     );
-    gl.clearColor(1.0, 1.0, 1.0, 1.0);
+    gl.clearColor(0, 0, 0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     interval(100).subscribe(() => {
